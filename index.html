@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Vânătoarea de Ouă | Delia</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none; /* prevents accidental selection on mobile, but text can still be read */
+        }
+
+        body {
+            background: linear-gradient(145deg, #fef9e4 0%, #fff5e6 100%);
+            font-family: 'Segoe UI', 'Quicksand', system-ui, -apple-system, 'Nunito', 'Comic Neue', sans-serif;
+            padding: 16px 12px 40px 12px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* main game container */
+        .game-container {
+            max-width: 550px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(255, 248, 225, 0.7);
+            border-radius: 72px 72px 64px 64px;
+            box-shadow: 0 20px 35px rgba(233, 176, 88, 0.2);
+            backdrop-filter: blur(2px);
+            padding: 18px 16px 30px;
+            transition: all 0.2s ease;
+        }
+
+        /* header cu cronometru + progres titlu */
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            background: #ffe3b5;
+            padding: 12px 20px;
+            border-radius: 60px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 0 #e2b87a;
+        }
+
+        .timer-box {
+            background: #2e241f;
+            padding: 6px 16px;
+            border-radius: 50px;
+            color: #ffefcf;
+            font-weight: bold;
+            font-size: 1.4rem;
+            letter-spacing: 2px;
+            font-family: monospace;
+            box-shadow: inset 0 0 0 2px #f7cf99, 0 4px 8px rgba(0,0,0,0.1);
+        }
+
+        .egg-counter {
+            background: white;
+            border-radius: 40px;
+            padding: 5px 15px;
+            font-weight: bold;
+            color: #b45f2b;
+            font-size: 1rem;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .egg-counter span {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #e67e22;
+        }
+
+        /* progress bar (ouă stil) */
+        .progress-eggs {
+            background: #ffe1b9;
+            border-radius: 60px;
+            padding: 12px 12px;
+            margin: 16px 0 24px 0;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: inset 0 1px 4px #c7a15e, 0 6px 12px rgba(0,0,0,0.05);
+        }
+
+        .egg-progress {
+            width: 44px;
+            height: 54px;
+            background: #e0cfb0;
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 0 #ac8e60;
+            color: #9b7a4b;
+        }
+
+        .egg-progress.found {
+            background: radial-gradient(circle at 30% 35%, #f9e75c, #f7bc45);
+            box-shadow: 0 0 8px #ffc107;
+            color: #ffefb0;
+            transform: scale(1.02);
+        }
+
+        /* card principal indiciu */
+        .clue-card {
+            background: #fffaf0;
+            border-radius: 64px;
+            padding: 32px 20px;
+            margin: 12px 0 28px;
+            text-align: center;
+            box-shadow: 0 20px 30px rgba(110, 70, 20, 0.2);
+            border: 3px solid #ffdd99;
+            transition: 0.2s;
+        }
+
+        .location-icon {
+            font-size: 3.4rem;
+            margin-bottom: 12px;
+        }
+
+        .clue-text {
+            font-size: 1.9rem;
+            font-weight: 800;
+            color: #9b4b1c;
+            background: #fff2df;
+            display: inline-block;
+            padding: 10px 24px;
+            border-radius: 60px;
+            margin-bottom: 16px;
+            letter-spacing: -0.3px;
+            word-break: break-word;
+        }
+
+        .clue-detail {
+            font-size: 1.5rem;
+            background: #fee2b5;
+            border-radius: 48px;
+            padding: 12px 10px;
+            color: #6b3a1c;
+            font-weight: 600;
+        }
+
+        /* input ou style */
+        .egg-input-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 18px;
+            margin: 15px 0 10px;
+        }
+
+        .egg-wrapper {
+            position: relative;
+            width: 180px;
+            height: 210px;
+            margin: 0 auto;
+            cursor: pointer;
+        }
+
+        .egg-shape {
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at 35% 40%, #f9e074, #f3bc4c);
+            border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+            box-shadow: 0 12px 18px rgba(0,0,0,0.2), inset 0 -5px 0 rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.1s ease, box-shadow 0.2s;
+            border: 3px solid #ffeaaf;
+        }
+
+        .egg-shape:active {
+            transform: scale(0.97);
+        }
+
+        .egg-input {
+            background: rgba(255, 250, 225, 0.95);
+            border: none;
+            width: 100px;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+            border-radius: 60px;
+            padding: 12px 0;
+            font-family: monospace;
+            color: #c55a1a;
+            outline: none;
+            box-shadow: inset 0 0 0 2px #f1cf8e, 0 4px 8px rgba(0,0,0,0.1);
+            margin-top: 15px;
+        }
+
+        .egg-label {
+            font-size: 0.9rem;
+            background: #d48d3b;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 40px;
+            margin-top: 6px;
+            font-weight: bold;
+        }
+
+        .submit-btn {
+            background: #6fbf4c;
+            border: none;
+            font-size: 1.6rem;
+            font-weight: bold;
+            padding: 14px 28px;
+            border-radius: 50px;
+            color: white;
+            width: 80%;
+            box-shadow: 0 6px 0 #2f6b1f;
+            transition: 0.07s linear;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .submit-btn:active {
+            transform: translateY(3px);
+            box-shadow: 0 3px 0 #2f6b1f;
+        }
+
+        /* mesaje popup */
+        .message-toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #f5e6d3;
+            backdrop-filter: blur(12px);
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-align: center;
+            z-index: 200;
+            box-shadow: 0 12px 22px rgba(0,0,0,0.2);
+            transition: 0.2s;
+            opacity: 0;
+            pointer-events: none;
+            border-left: 12px solid gold;
+        }
+
+        .message-toast.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1);
+        }
+
+        /* final animations */
+        .final-fireworks {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            flex-direction: column;
+            gap: 20px;
+            animation: fadeIn 0.5s;
+        }
+
+        .final-content {
+            background: #fffaec;
+            border-radius: 90px;
+            padding: 35px 25px;
+            text-align: center;
+            max-width: 85%;
+            animation: bounceEgg 0.6s;
+            border: 5px solid #ffb347;
+        }
+
+        .bunny {
+            font-size: 5rem;
+            animation: hop 0.8s infinite alternate;
+        }
+
+        @keyframes hop {
+            0% { transform: translateY(0px);}
+            100% { transform: translateY(-20px);}
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0;}
+            to { opacity: 1;}
+        }
+
+        @keyframes bounceEgg {
+            0% { transform: scale(0.7); opacity: 0;}
+            80% { transform: scale(1.05);}
+            100% { transform: scale(1);}
+        }
+
+        .wrong-shake {
+            animation: shake 0.3s ease-in-out 0s 2;
+            background-color: #ffb4a2 !important;
+        }
+
+        @keyframes shake {
+            0%,100%{ transform: translateX(0);}
+            25%{ transform: translateX(-6px);}
+            75%{ transform: translateX(6px);}
+        }
+
+        .correct-pop {
+            animation: pop 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
+        }
+
+        @keyframes pop {
+            0% { transform: scale(1); background: #ffefb9;}
+            50% { transform: scale(1.07); background: #ffdd88;}
+            100% { transform: scale(1);}
+        }
+
+        footer {
+            text-align: center;
+            font-size: 0.7rem;
+            margin-top: 20px;
+            color: #bc8f6a;
+        }
+    </style>
+</head>
+<body>
+<div class="game-container" id="gameApp">
+    <div class="game-header">
+        <div class="egg-counter">🥚 <span id="progressCount">0</span> / <span id="totalCount">14</span></div>
+        <div class="timer-box">⏱️ <span id="timerDisplay">00:00</span></div>
+    </div>
+
+    <div class="progress-eggs" id="progressEggsContainer"></div>
+
+    <div class="clue-card" id="clueCard">
+        <div class="location-icon" id="locationIcon">🐣</div>
+        <div class="clue-text" id="clueLocation">Loading...</div>
+        <div class="clue-detail" id="clueHint">✨ caută indiciul ✨</div>
+    </div>
+
+    <div class="egg-input-area">
+        <div class="egg-wrapper" id="eggWrapper">
+            <div class="egg-shape" id="eggShape">
+                <input type="number" id="eggNumberInput" class="egg-input" placeholder="?" inputmode="numeric" autocomplete="off">
+                <div class="egg-label">🔢 Insert number</div>
+            </div>
+        </div>
+        <button class="submit-btn" id="submitGuess">🥚 Submit 🥚</button>
+    </div>
+    <footer>🐇 pentru Delia, cu multă magie de Paști 🐣</footer>
+</div>
+
+<div id="toastMessage" class="message-toast">✨ Mesaj ✨</div>
+
+<script>
+    // ---------- DATE JOC ----------
+    const LOCATIONS = [
+        { place: "Dining Room", hint: "under table", emoji: "🍽️" },
+        { place: "Bedroom", hint: "bin", emoji: "🗑️" },
+        { place: "Garden", hint: "BBQ", emoji: "🍖" },
+        { place: "PlayingRoom", hint: "Barbi house", emoji: "🏠🎀" },
+        { place: "Bathroom", hint: "bathtube", emoji: "🛁" },
+        { place: "Bedroom", hint: "mother socks", emoji: "🧦" },
+        { place: "Garden", hint: "play house", emoji: "🏡" },
+        { place: "PlayingRoom", hint: "hamsters", emoji: "🐹" },
+        { place: "chicken", hint: "oven", emoji: "🐔🔥" },
+        { place: "bedroom", hint: "wardrobe", emoji: "🚪👗" },
+        { place: "garden", hint: "bin", emoji: "🗑️🌿" },
+        { place: "playingroom", hint: "mini chicken", emoji: "🐥" },
+        { place: "outside", hint: "shoes", emoji: "👟" },
+        { place: "bedroom", hint: "under the bed", emoji: "🛏️✨" }
+    ];
+
+    const ANSWERS = [5, 3, 4, 6, 1, 2, 3, 2, 4, 3, 5, 2, 3, 100];  // corectat dupa array final (14 elemente)
+
+    const TOTAL_STEPS = LOCATIONS.length;   // =14
+
+    // stare joc
+    let currentIndex = 0;           // 0-based, cardul activ
+    let gameCompleted = false;
+    let timerSeconds = 0;
+    let timerInterval = null;
+    let audioEnabled = false;
+
+    // referinte DOM
+    const clueLocationEl = document.getElementById('clueLocation');
+    const clueHintEl = document.getElementById('clueHint');
+    const locationIconEl = document.getElementById('locationIcon');
+    const progressEggsContainer = document.getElementById('progressEggsContainer');
+    const progressCountSpan = document.getElementById('progressCount');
+    const totalCountSpan = document.getElementById('totalCount');
+    const timerDisplaySpan = document.getElementById('timerDisplay');
+    const submitBtn = document.getElementById('submitGuess');
+    const eggNumberInput = document.getElementById('eggNumberInput');
+    const toastMsgDiv = document.getElementById('toastMessage');
+    const eggShapeDiv = document.getElementById('eggShape');
+
+    totalCountSpan.innerText = TOTAL_STEPS;
+
+    // ----- sunete simple (web audio, fisiere simulate) -----
+    function playSound(type) {
+        if (!audioEnabled) return;
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const gainNode = audioCtx.createGain();
+            gainNode.connect(audioCtx.destination);
+            const osc = audioCtx.createOscillator();
+            osc.connect(gainNode);
+            if (type === 'correct') {
+                osc.frequency.value = 880;
+                gainNode.gain.value = 0.2;
+                osc.type = 'sine';
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.25);
+            } else if (type === 'wrong') {
+                osc.frequency.value = 440;
+                gainNode.gain.value = 0.2;
+                osc.type = 'triangle';
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.2);
+                // drop
+                setTimeout(() => {
+                    const osc2 = audioCtx.createOscillator();
+                    osc2.connect(gainNode);
+                    osc2.frequency.value = 330;
+                    osc2.type = 'sawtooth';
+                    osc2.start();
+                    osc2.stop(audioCtx.currentTime + 0.15);
+                }, 100);
+            } else if (type === 'final') {
+                // sunet festiv
+                const melody = [523, 659, 784, 1046];
+                melody.forEach((freq, idx) => {
+                    const o = audioCtx.createOscillator();
+                    const g = audioCtx.createGain();
+                    o.connect(g);
+                    g.connect(audioCtx.destination);
+                    o.frequency.value = freq;
+                    g.gain.value = 0.15;
+                    o.type = 'sine';
+                    o.start(audioCtx.currentTime + idx * 0.12);
+                    o.stop(audioCtx.currentTime + idx * 0.12 + 0.3);
+                });
+            }
+        } catch(e) { console.log("audio not allowed yet"); }
+    }
+
+    // activare sunete dupa primul click pe buton sau input
+    function enableAudioOnFirstInteraction() {
+        if (!audioEnabled) {
+            audioEnabled = true;
+            // incercam sa creem context dummy
+            try {
+                const ctx = new (window.AudioContext || window.webkitAudioContext)();
+                ctx.resume();
+            } catch(e) {}
+        }
+    }
+
+    // ----- cronometru -----
+    function startTimer() {
+        if (timerInterval) clearInterval(timerInterval);
+        timerInterval = setInterval(() => {
+            if (!gameCompleted) {
+                timerSeconds++;
+                const mins = Math.floor(timerSeconds / 60);
+                const secs = timerSeconds % 60;
+                timerDisplaySpan.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+                saveGameToLocal();
+            }
+        }, 1000);
+    }
+
+    // ----- save / load (localStorage) -----
+    function saveGameToLocal() {
+        if (gameCompleted) return;
+        const saveData = {
+            currentIndex: currentIndex,
+            timerSeconds: timerSeconds,
+            completed: false
+        };
+        localStorage.setItem('easterHuntDelia', JSON.stringify(saveData));
+    }
+
+    function loadGameFromLocal() {
+        const saved = localStorage.getItem('easterHuntDelia');
+        if (!saved) return false;
+        try {
+            const data = JSON.parse(saved);
+            if (!data.completed && data.currentIndex !== undefined && data.currentIndex < TOTAL_STEPS) {
+                currentIndex = data.currentIndex;
+                timerSeconds = data.timerSeconds || 0;
+                updateTimerDisplay();
+                return true;
+            }
+        } catch(e) {}
+        return false;
+    }
+
+    function updateTimerDisplay() {
+        const mins = Math.floor(timerSeconds / 60);
+        const secs = timerSeconds % 60;
+        timerDisplaySpan.innerText = `${mins.toString().padStart(2,'0')}:${secs.toString().padStart(2,'0')}`;
+    }
+
+    // ----- update UI card & progress -----
+    function updateClueCard() {
+        if (gameCompleted) return;
+        const loc = LOCATIONS[currentIndex];
+        if (!loc) return;
+        clueLocationEl.innerText = `${loc.place}`;
+        clueHintEl.innerText = `📍 ${loc.hint}`;
+        locationIconEl.innerText = loc.emoji || "🥚";
+    }
+
+    function renderProgressEggs() {
+        progressEggsContainer.innerHTML = '';
+        for (let i = 0; i < TOTAL_STEPS; i++) {
+            const eggDiv = document.createElement('div');
+            eggDiv.classList.add('egg-progress');
+            if (i < currentIndex) {
+                eggDiv.classList.add('found');
+                eggDiv.innerText = '🐣';
+            } else if (i === currentIndex && !gameCompleted) {
+                eggDiv.innerText = '🥚';
+                eggDiv.style.opacity = '1';
+            } else {
+                eggDiv.innerText = '🥚';
+                eggDiv.classList.remove('found');
+            }
+            if (i === currentIndex && !gameCompleted) eggDiv.style.border = '3px solid #f3a712';
+            else eggDiv.style.border = 'none';
+            progressEggsContainer.appendChild(eggDiv);
+        }
+        progressCountSpan.innerText = currentIndex;
+    }
+
+    // ----- mesaj toast animat-----
+    function showMessage(text, isError = false) {
+        toastMsgDiv.innerText = text;
+        toastMsgDiv.classList.add('show');
+        if (isError) {
+            toastMsgDiv.style.background = "#ffe0d4";
+            toastMsgDiv.style.borderLeftColor = "#e67e22";
+        } else {
+            toastMsgDiv.style.background = "#e1f7d5";
+            toastMsgDiv.style.borderLeftColor = "#6fbf4c";
+        }
+        setTimeout(() => {
+            toastMsgDiv.classList.remove('show');
+        }, 1600);
+    }
+
+    // efect spargere ou + corect
+    async function correctAnswerEffect() {
+        // animatie ou spargere
+        eggShapeDiv.classList.add('correct-pop');
+        playSound('correct');
+        showMessage(`🎉 CORECT! 🎉 ${LOCATIONS[currentIndex].place} găsit!`, false);
+        // trecem la urmatorul card
+        const wasLast = (currentIndex + 1 >= TOTAL_STEPS);
+        if (!wasLast) {
+            currentIndex++;
+            renderProgressEggs();
+            updateClueCard();
+            eggNumberInput.value = '';
+            saveGameToLocal();
+            // mica animatie de succes pe card
+            const card = document.querySelector('.clue-card');
+            card.style.transform = 'scale(1.01)';
+            setTimeout(() => { card.style.transform = ''; }, 200);
+        } else {
+            // FINAL : indexul curent este ultimul (trebuie finalizat cu 100)
+            // caz special final
+            gameCompleted = true;
+            if (timerInterval) clearInterval(timerInterval);
+            renderProgressEggs();
+            showFinalScreen();
+            saveGameToLocal();
+        }
+        eggShapeDiv.classList.remove('correct-pop');
+        if (!wasLast) renderProgressEggs();
+        else renderProgressEggs();
+    }
+
+    function wrongAnswerEffect() {
+        playSound('wrong');
+        showMessage(`❌ GREȘIT! Încearcă din nou, numărul nu este corect. ❌`, true);
+        eggShapeDiv.classList.add('wrong-shake');
+        eggNumberInput.classList.add('wrong-shake');
+        setTimeout(() => {
+            eggShapeDiv.classList.remove('wrong-shake');
+            eggNumberInput.classList.remove('wrong-shake');
+        }, 400);
+        eggNumberInput.value = '';
+        eggNumberInput.focus();
+    }
+
+    // ecran final frumos curcubeu + iepuras + oua
+    function showFinalScreen() {
+        // eliminam orice altceva dinamic, dar afisam overlay
+        const finalDiv = document.createElement('div');
+        finalDiv.className = 'final-fireworks';
+        finalDiv.innerHTML = `
+            <div class="final-content">
+                <div class="bunny">🐇🐣🌈</div>
+                <div style="font-size: 3rem;">🥚🎉🥚</div>
+                <h2 style="color:#ff914d; font-size: 2rem;">FELICITĂRI, DELIA!</h2>
+                <p style="font-size:1.3rem;">Ai găsit TOATE ouăle magice!</p>
+                <p style="font-size:1.5rem;">⭐ Iepurașul te pupă ⭐</p>
+                <div style="font-size:2rem;">🐣🌸🐰</div>
+                <p style="margin-top:12px;">⏱️ Timp total: ${timerDisplaySpan.innerText}</p>
+            </div>
+        `;
+        document.body.appendChild(finalDiv);
+        playSound('final');
+        // salvam completed
+        localStorage.setItem('easterHuntDelia', JSON.stringify({ completed: true, timerSeconds: timerSeconds, currentIndex: TOTAL_STEPS }));
+        // ascundem butoanele de input? nu e necesar
+        submitBtn.disabled = true;
+        eggNumberInput.disabled = true;
+        eggNumberInput.style.opacity = '0.5';
+    }
+
+    // reset game (nu exista buton, dar salvam daca este final sau gresit total nu)
+    // handle guess
+    function handleGuess() {
+        if (gameCompleted) {
+            showMessage("Jocul e deja terminat! 🎉 Bravo!", false);
+            return;
+        }
+        enableAudioOnFirstInteraction();
+        let rawValue = eggNumberInput.value.trim();
+        if (rawValue === "") {
+            showMessage("🐣 Introdu un număr, te rog!", true);
+            return;
+        }
+        const guess = Number(rawValue);
+        if (isNaN(guess)) {
+            showMessage("🔢 Trebuie un număr (cifre)", true);
+            return;
+        }
+        const correctAnswer = ANSWERS[currentIndex];
+        if (guess === correctAnswer) {
+            // corect
+            if (currentIndex === TOTAL_STEPS - 1 && correctAnswer === 100) {
+                // finalizeaza joc
+                correctAnswerEffect(); // va apela final screen
+            } else if (currentIndex < TOTAL_STEPS) {
+                correctAnswerEffect();
+            } else {
+                // caz final deja
+                if(!gameCompleted) gameCompleted=true;
+                showFinalScreen();
+            }
+        } else {
+            wrongAnswerEffect();
+        }
+    }
+
+    // initializare joc, incarcare stare anterioara
+    function initGame() {
+        const saved = localStorage.getItem('easterHuntDelia');
+        let loaded = false;
+        if (saved) {
+            try {
+                const data = JSON.parse(saved);
+                if (data.completed === true) {
+                    gameCompleted = true;
+                    // aratam ecran final direct daca s-a terminat deja in trecut
+                    showFinalScreen();
+                    return;
+                } else if (data.currentIndex !== undefined && data.currentIndex < TOTAL_STEPS && !data.completed) {
+                    currentIndex = data.currentIndex;
+                    timerSeconds = data.timerSeconds || 0;
+                    updateTimerDisplay();
+                    loaded = true;
+                }
+            } catch(e) {}
+        }
+        if (!loaded) {
+            currentIndex = 0;
+            timerSeconds = 0;
+            updateTimerDisplay();
+            localStorage.removeItem('easterHuntDelia');
+        }
+        gameCompleted = false;
+        updateClueCard();
+        renderProgressEggs();
+        startTimer();
+        eggNumberInput.value = '';
+        submitBtn.disabled = false;
+        eggNumberInput.disabled = false;
+        eggNumberInput.style.opacity = '1';
+        // evenimente
+        submitBtn.addEventListener('click', handleGuess);
+        eggNumberInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') handleGuess();
+        });
+        // curata orice ecran final vechi
+        const oldFinal = document.querySelector('.final-fireworks');
+        if(oldFinal) oldFinal.remove();
+    }
+
+    // Pornim jocul
+    initGame();
+</script>
+</body>
+</html>
