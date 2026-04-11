@@ -712,6 +712,21 @@
         if(oldFinal) oldFinal.remove();
     }
 
+    
+    // ========== COD RESET PRIN QR CODE ==========
+    const urlParams = new URLSearchParams(window.location.search);
+    const resetParam = urlParams.get('reset');
+    
+    if (resetParam === '1') {
+        localStorage.removeItem('easterHuntDelia');
+        console.log("🗑️ Reset prin QR code - joc nou pentru Delia!");
+        
+        // Elimină parametrul din URL ca să nu mai reseteze la reîncărcare
+        const newUrl = window.location.href.split('?')[0];
+        window.history.replaceState({}, document.title, newUrl);
+    }
+    // ==========================================
+
     // Pornim jocul
     initGame();
 </script>
