@@ -84,21 +84,21 @@
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            gap: 8px;
+            gap: 6px;
             box-shadow: inset 0 1px 4px #c7a15e, 0 6px 12px rgba(0,0,0,0.05);
         }
 
         .egg-progress {
-            width: 44px;
-            height: 54px;
+            width: 36px;
+            height: 44px;
             background: #e0cfb0;
             border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.6rem;
+            font-size: 1.2rem;
             transition: all 0.2s ease;
-            box-shadow: 0 3px 0 #ac8e60;
+            box-shadow: 0 2px 0 #ac8e60;
             color: #9b7a4b;
         }
 
@@ -367,18 +367,18 @@
     const LOCATIONS = [
         { place: "Dining Room", hint: "under table", emoji: "🍽️" },
         { place: "Bedroom", hint: "bin", emoji: "🗑️" },
-        { place: "Garden", hint: "BBQ", emoji: "🍖" },
-        { place: "PlayingRoom", hint: "Barbi house", emoji: "🏠🎀" },
+        { place: "Garden", hint: "bbq", emoji: "🍖" },
+        { place: "Playing Room", hint: "barbi house", emoji: "🏠🎀" },
         { place: "Bathroom", hint: "bathtube", emoji: "🛁" },
         { place: "Bedroom", hint: "mother socks", emoji: "🧦" },
         { place: "Garden", hint: "play house", emoji: "🏡" },
-        { place: "PlayingRoom", hint: "hamsters", emoji: "🐹" },
-        { place: "chicken", hint: "oven", emoji: "🐔🔥" },
-        { place: "bedroom", hint: "wardrobe", emoji: "🚪👗" },
-        { place: "garden", hint: "bin", emoji: "🗑️🌿" },
-        { place: "playingroom", hint: "mini chicken", emoji: "🐥" },
-        { place: "outside", hint: "shoes", emoji: "👟" },
-        { place: "bedroom", hint: "under the bed", emoji: "🛏️✨" }
+        { place: "Playing Room", hint: "hamsters", emoji: "🐹" },
+        { place: "Kitchen", hint: "oven", emoji: "🐔🔥" },
+        { place: "Bedroom", hint: "wardrobe", emoji: "🚪👗" },
+        { place: "Garden", hint: "bin", emoji: "🗑️🌿" },
+        { place: "Playing Room", hint: "mini chicken", emoji: "🐥" },
+        { place: "Outside", hint: "shoes", emoji: "👟" },
+        { place: "Bedroom", hint: "under the bed", emoji: "🛏️✨" }
     ];
 
     const ANSWERS = [5, 3, 4, 6, 1, 2, 3, 2, 4, 3, 5, 2, 3, 100];  // corectat dupa array final (14 elemente)
@@ -595,7 +595,7 @@
 
     function wrongAnswerEffect() {
         playSound('wrong');
-        showMessage(`❌ GREȘIT! Încearcă din nou, numărul nu este corect. ❌`, true);
+        showMessage(`❌ GREȘIT! ❌`, true);
         eggShapeDiv.classList.add('wrong-shake');
         eggNumberInput.classList.add('wrong-shake');
         setTimeout(() => {
@@ -653,7 +653,7 @@
         const correctAnswer = ANSWERS[currentIndex];
         if (guess === correctAnswer) {
             // corect
-            if (currentIndex === TOTAL_STEPS - 1 && correctAnswer === 100) {
+            if (currentIndex === TOTAL_STEPS - 1 && correctAnswer > 11) {
                 // finalizeaza joc
                 correctAnswerEffect(); // va apela final screen
             } else if (currentIndex < TOTAL_STEPS) {
