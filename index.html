@@ -363,7 +363,10 @@
 <div id="toastMessage" class="message-toast">✨ Mesaj ✨</div>
 
 <script>
-    // ---------- DATE JOC ----------
+    // ---------- DATE JOC ----------   
+    let playerName = "Deli"; // numele jucatoarei, poate fi personalizat
+
+     // Numarul de pasi (oua) este dat de aceasta lista
     const LOCATIONS = [
         { place: "Dining Room", hint: "under table", emoji: "🍽️" },
         { place: "Bedroom", hint: "bin", emoji: "🗑️" },
@@ -381,7 +384,7 @@
         { place: "Bedroom", hint: "under the bed", emoji: "🛏️✨" }
     ];
 
-    const ANSWERS = [5, 3, 4, 6, 1, 2, 3, 2, 4, 3, 5, 2, 3, 100];  // corectat dupa array final (14 elemente)
+    const ANSWERS = [5, 3, 4, 6, 1, 2, 3, 2, 4, 3, 5, 2, 3, 100];  
 
     const TOTAL_STEPS = LOCATIONS.length;   // =14
 
@@ -615,7 +618,7 @@
             <div class="final-content">
                 <div class="bunny">🐇🐣🌈</div>
                 <div style="font-size: 3rem;">🥚🎉🥚</div>
-                <h2 style="color:#ff914d; font-size: 2rem;">FELICITĂRI, DELIA!</h2>
+                <h2 style="color:#ff914d; font-size: 2rem;">FELICITĂRI, ${playerName}!</h2>
                 <p style="font-size:1.3rem;">Ai găsit TOATE ouăle magice!</p>
                 <p style="font-size:1.5rem;">⭐ Iepurașul te pupă ⭐</p>
                 <div style="font-size:2rem;">🐣🌸🐰</div>
@@ -642,7 +645,9 @@
         enableAudioOnFirstInteraction();
         let rawValue = eggNumberInput.value.trim();
         if (rawValue === "") {
-            showMessage("🐣 Introdu un număr, te rog!", true);
+            showMessage("🐣 Only numbers, please!", true);
+            eggNumberInput.value = "";  // șterge complet
+            eggNumberInput.focus();      // rămâne focusat pe ou
             return;
         }
         const guess = Number(rawValue);
@@ -651,18 +656,14 @@
             return;
         }
         const correctAnswer = ANSWERS[currentIndex];
-        if (guess === correctAnswer) {
-            // corect
-            if (currentIndex === TOTAL_STEPS - 1) {
-                // finalizeaza joc
-                correctAnswerEffect(); // va apela final screen
-            } else if (currentIndex < TOTAL_STEPS) {
-                correctAnswerEffect();
-            } else {
-                // caz final deja
-                if(!gameCompleted) gameCompleted=true;
-                showFinalScreen();
-            }
+        console.log(`TOTAL_STEPS: ${TOTAL_STEPS}, currentIndex: ${currentIndex}`);
+        if (currentIndex === TOTAL_STEPS - 1) {
+            // Ultimul card - Finalizeaza joc -  acceptă ORICE număr, nu mai verifică
+            console.log("Ultimul ou găsit! Finalizăm jocul...");              
+            correctAnswerEffect(); // va apela final screen
+        } else if (guess === correctAnswer) {
+            // Nu e ultimul - verifică dacă numărul e corect
+            correctAnswerEffect();
         } else {
             wrongAnswerEffect();
         }
@@ -716,6 +717,7 @@
     // ========== COD RESET PRIN QR CODE ==========
     const urlParams = new URLSearchParams(window.location.search);
     const resetParam = urlParams.get('reset');
+    //const resetParam = '1';
     
     if (resetParam === '1') {
         localStorage.removeItem('easterHuntDelia');
