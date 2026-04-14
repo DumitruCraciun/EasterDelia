@@ -376,7 +376,7 @@
         { place: "Kitchen", hint: "oven", emoji: "🐔🔥" },
         { place: "Bedroom", hint: "wardrobe", emoji: "🚪👗" },
         { place: "Garden", hint: "bin", emoji: "🗑️🌿" },
-        { place: "Playing Room", hint: "mini chicken", emoji: "🐥" },
+        { place: "Playing Room", hint: "mini kitchen", emoji: "🐥" },
         { place: "Outside", hint: "shoes", emoji: "👟" },
         { place: "Bedroom", hint: "under the bed", emoji: "🛏️✨" }
     ];
@@ -580,7 +580,7 @@
             card.style.transform = 'scale(1.01)';
             setTimeout(() => { card.style.transform = ''; }, 200);
         } else {
-            // FINAL : indexul curent este ultimul (trebuie finalizat cu 100)
+            // FINAL : indexul curent este ultimul 
             // caz special final
             gameCompleted = true;
             if (timerInterval) clearInterval(timerInterval);
@@ -653,7 +653,7 @@
         const correctAnswer = ANSWERS[currentIndex];
         if (guess === correctAnswer) {
             // corect
-            if (currentIndex === TOTAL_STEPS - 1 && correctAnswer > 11) {
+            if (currentIndex === TOTAL_STEPS - 1) {
                 // finalizeaza joc
                 correctAnswerEffect(); // va apela final screen
             } else if (currentIndex < TOTAL_STEPS) {
